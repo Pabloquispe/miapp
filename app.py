@@ -66,7 +66,7 @@ def configure_logging(app):
     """Configura los logs de la aplicación."""
     if not app.debug:
         if not os.path.exists('logs'):
-            os.mkdir('logs')
+            os.makedirs('logs')
         file_handler = RotatingFileHandler('logs/app.log', maxBytes=10240, backupCount=10)
         file_handler.setLevel(logging.INFO)
         formatter = logging.Formatter(
@@ -94,4 +94,3 @@ if __name__ == '__main__':
     print(f"Configuración utilizada: {config_name}")
     app = create_app(config_name)
     app.run()
-
