@@ -88,3 +88,9 @@ def configure_error_handlers(app):
     def internal_error(error):
         db.session.rollback()
         return render_template('500.html'), 500
+
+if __name__ == '__main__':
+    config_name = os.getenv('FLASK_CONFIG', 'default')
+    print(f"Configuración utilizada: {config_name}")
+    app = create_app(config_name)
+    app.run()
