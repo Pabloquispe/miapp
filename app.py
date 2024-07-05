@@ -32,7 +32,6 @@ def create_app(config_name):
 
     # Configurar Redis para sesiones
     session_redis_url = app.config.get('SESSION_REDIS')
-    print(f"SESSION_REDIS URL from config: {session_redis_url}")
     if session_redis_url:
         app.config['SESSION_REDIS'] = Redis.from_url(session_redis_url)
         Session(app)
@@ -88,4 +87,3 @@ def configure_error_handlers(app):
     def internal_error(error):
         db.session.rollback()
         return render_template('500.html'), 500
-
