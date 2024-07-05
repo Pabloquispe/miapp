@@ -22,8 +22,8 @@ class Config:
     SESSION_TYPE = 'redis'
     SESSION_PERMANENT = False
     SESSION_USE_SIGNER = True
-    SESSION_REDIS = os.environ.get('REDIS_URL')
     SESSION_COOKIE_NAME = 'my_session'
+    SESSION_REDIS = os.environ.get('REDIS_TLS_URL') or os.environ.get('REDIS_URL')
 
 class DevelopmentConfig(Config):
     """Configuración utilizada durante el desarrollo."""
@@ -48,3 +48,4 @@ config_by_name = {
     'prod': ProductionConfig,
     'default': DevelopmentConfig
 }
+
