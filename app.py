@@ -1,4 +1,4 @@
-from flask import Flask, session, render_template
+from flask import Flask, render_template
 from flask_migrate import Migrate
 from flask_session import Session
 from config import config_by_name
@@ -27,7 +27,8 @@ def create_app(config_name):
     app.config['SESSION_PERMANENT'] = False
     app.config['SESSION_USE_SIGNER'] = True
     app.config['SESSION_FILE_THRESHOLD'] = 100
-    app.config['SESSION_FILE_MODE'] = 600
+    app.config['SESSION_FILE_MODE'] = 0o600
+    app.config['SESSION_COOKIE_NAME'] = 'my_session'
 
     # Inicializar Flask-Session
     Session(app)
