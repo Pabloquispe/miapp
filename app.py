@@ -1,4 +1,3 @@
-import os
 from flask import Flask, render_template
 from flask_migrate import Migrate
 from flask_session import Session
@@ -13,6 +12,7 @@ from controladores.routes import register_routes
 import logging
 from logging.handlers import RotatingFileHandler
 from dotenv import load_dotenv
+import os
 
 # Cargar variables de entorno
 load_dotenv()
@@ -64,7 +64,6 @@ def create_app(config_name):
 
 def configure_logging(app):
     """Configura los logs de la aplicación."""
-    import os  # Asegúrate de importar os aquí
     if not app.debug:
         if not os.path.exists('logs'):
             os.mkdir('logs')
