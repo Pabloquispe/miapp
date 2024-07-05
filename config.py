@@ -22,6 +22,9 @@ class Config:
     SESSION_TYPE = 'filesystem'
     SESSION_PERMANENT = False
     SESSION_USE_SIGNER = True
+    SESSION_FILE_DIR = os.path.join(BASE_DIR, 'flask_session')
+    SESSION_FILE_THRESHOLD = 100
+    SESSION_FILE_MODE = 600
     SESSION_COOKIE_NAME = 'my_session'
 
 class DevelopmentConfig(Config):
