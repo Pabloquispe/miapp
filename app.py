@@ -1,8 +1,6 @@
-import os
-from flask import Flask, render_template
+from flask import Flask, render_template, session
 from flask_migrate import Migrate
 from flask_session import Session
-from redis import Redis
 from config import config_by_name
 from modelos.models import db
 from controladores.admin_routes import admin_bp
@@ -13,6 +11,7 @@ from controladores.routes import register_routes
 import logging
 from logging.handlers import RotatingFileHandler
 from dotenv import load_dotenv
+import os
 
 # Cargar variables de entorno
 load_dotenv()
@@ -30,14 +29,9 @@ def create_app(config_name):
         'pool_recycle': 3600,
     }
 
-    # Configurar Redis para sesiones
-    session_redis_url = app.config.get('SESSION_REDIS')
-    if session_redis_url:
-        app.config['SESSION_REDIS'] = Redis.from_url(session_redis_url)
-        app.config['SESSION_TYPE'] = 'redis'
-        Session(app)
-    else:
-        raise ValueError("La configuración SESSION_REDIS no está definida o es None.")
+    # Configurar sesiones para usar filesystem en lugar de Redis
+    app.config['SESSION_TYPE'] = 'filesystem'
+    Session(app)
 
     db.init_app(app)
     db.app = app
@@ -89,8 +83,8 @@ def configure_error_handlers(app):
         db.session.rollback()
         return render_template('500.html'), 500
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     config_name = os.getenv('FLASK_CONFIG', 'default')
+    print(f"Configuración utilizada: {config_name}")
     app = create_app(config_name)
-    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
-
+    app.run()
