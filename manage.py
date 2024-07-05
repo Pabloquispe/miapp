@@ -8,6 +8,11 @@ from controladores.admin_routes import admin_bp
 from controladores.user_routes import user_bp
 from controladores.auth_routes import auth_bp
 from controladores.main_routes import main_bp
+from flask_script import Manager, Command
+from dotenv import load_dotenv
+
+# Cargar variables de entorno
+load_dotenv()
 
 def create_app(config_name):
     """Crea y configura la aplicación Flask."""
@@ -31,12 +36,25 @@ def create_app(config_name):
 
     return app
 
-if __name__ == "__main__":
-    config_name = os.getenv('FLASK_CONFIG', 'default')
-    app = create_app(config_name)
+app = create_app(os.getenv('FLASK_CONFIG') or 'default')
+manager = Manager(app)
 
+class DBUpgrade(Command):
+    """Actualiza la base de datos a la última versión."""
+    def run(self):
+        with app.app_context():
+            upgrade()
+
+manager.add_command('db_upgrade', DBUpgrade())
+
+@manager.command
+def run():
+    """Ejecuta la aplicación Flask."""
+    app.run(debug=(os.getenv('FLASK_CONFIG') == 'dev'))
+
+if __name__ == "__main__":
     if len(sys.argv) > 1 and sys.argv[1] == 'db':
         with app.app_context():
             upgrade()
     else:
-        app.run(debug=(config_name == 'dev'))
+        manager.run()
