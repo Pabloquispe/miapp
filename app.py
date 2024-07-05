@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, session, render_template
 from flask_migrate import Migrate
 from flask_session import Session
 from config import config_by_name
@@ -21,6 +21,17 @@ def create_app(config_name):
     app = Flask(__name__, template_folder='vistas/templates', static_folder='vistas/static')
     app.config.from_object(config_by_name[config_name])
 
+    # Configuración de sesiones
+    app.config['SESSION_TYPE'] = 'filesystem'
+    app.config['SESSION_FILE_DIR'] = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'flask_session')
+    app.config['SESSION_PERMANENT'] = False
+    app.config['SESSION_USE_SIGNER'] = True
+    app.config['SESSION_FILE_THRESHOLD'] = 100
+    app.config['SESSION_FILE_MODE'] = 600
+
+    # Inicializar Flask-Session
+    Session(app)
+
     # Configurar opciones del motor SQLAlchemy
     app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
         'pool_size': 10,
@@ -28,8 +39,6 @@ def create_app(config_name):
         'pool_timeout': 30,
         'pool_recycle': 3600,
     }
-
-    Session(app)  # Inicializar Flask-Session
 
     db.init_app(app)
     db.app = app
@@ -85,5 +94,5 @@ if __name__ == '__main__':
     config_name = os.getenv('FLASK_CONFIG', 'default')
     print(f"Configuración utilizada: {config_name}")
     app = create_app(config_name)
-    app.run()
+    app.run(debug=True)  # Habilitar el modo debug para ver posibles errores en la consola de Heroku
 
