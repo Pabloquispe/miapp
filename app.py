@@ -1,4 +1,4 @@
-from flask import Flask, render_template, session
+from flask import Flask
 from flask_migrate import Migrate
 from flask_session import Session
 from config import config_by_name
@@ -29,11 +29,7 @@ def create_app(config_name):
         'pool_recycle': 3600,
     }
 
-    # Configuración de sesiones basada en archivos
-    if not os.path.exists(app.config['SESSION_FILE_DIR']):
-        os.makedirs(app.config['SESSION_FILE_DIR'])
-
-    Session(app)
+    Session(app)  # Inicializar Flask-Session
 
     db.init_app(app)
     db.app = app
@@ -90,5 +86,4 @@ if __name__ == '__main__':
     print(f"Configuración utilizada: {config_name}")
     app = create_app(config_name)
     app.run()
-
 
