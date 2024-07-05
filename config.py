@@ -42,4 +42,3 @@ config_by_name = {
     'prod': ProductionConfig,
     'default': DevelopmentConfig
 }
-
