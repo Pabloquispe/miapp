@@ -1,11 +1,7 @@
-import os
-import logging
-from logging.handlers import RotatingFileHandler
 from flask import Flask, render_template
 from flask_migrate import Migrate
 from flask_session import Session
 from redis import Redis
-from dotenv import load_dotenv
 from config import config_by_name
 from modelos.models import db
 from controladores.admin_routes import admin_bp
@@ -13,6 +9,10 @@ from controladores.user_routes import user_bp
 from controladores.auth_routes import auth_bp
 from controladores.main_routes import main_bp
 from controladores.routes import register_routes
+import logging
+from logging.handlers import RotatingFileHandler
+from dotenv import load_dotenv
+import os
 
 # Cargar variables de entorno
 load_dotenv()
@@ -94,4 +94,3 @@ if __name__ == '__main__':
     print(f"Configuración utilizada: {config_name}")
     app = create_app(config_name)
     app.run()
-
