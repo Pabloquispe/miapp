@@ -12,12 +12,17 @@ class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY') or os.urandom(24)
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
-    # Configuración de Redis para sesiones
-    SESSION_TYPE = 'redis'
+    # Configuración de horarios de servicios
+    HORARIO_INICIO_MANANA = '09:00'
+    HORARIO_FIN_MANANA = '12:00'
+    HORARIO_INICIO_TARDE = '13:00'
+    HORARIO_FIN_TARDE = '18:00'
+
+    # Configuración de sesiones para usar filesystem
+    SESSION_TYPE = 'filesystem'
     SESSION_PERMANENT = False
     SESSION_USE_SIGNER = True
     SESSION_COOKIE_NAME = 'my_session'
-    SESSION_REDIS = os.environ.get('REDIS_TLS_URL') or os.environ.get('REDIS_URL')
 
 class DevelopmentConfig(Config):
     """Configuración utilizada durante el desarrollo."""
