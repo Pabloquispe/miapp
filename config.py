@@ -23,6 +23,7 @@ class Config:
     SESSION_PERMANENT = False
     SESSION_USE_SIGNER = True
     SESSION_REDIS = os.environ.get('REDIS_URL')
+    SESSION_COOKIE_NAME = 'my_session'
 
 class DevelopmentConfig(Config):
     """Configuración utilizada durante el desarrollo."""
