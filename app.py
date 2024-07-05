@@ -29,7 +29,10 @@ def create_app(config_name):
         'pool_recycle': 3600,
     }
 
-    # Inicializar Flask-Session
+    # Configuración de sesiones basada en archivos
+    if not os.path.exists(app.config['SESSION_FILE_DIR']):
+        os.makedirs(app.config['SESSION_FILE_DIR'])
+
     Session(app)
 
     db.init_app(app)
@@ -87,4 +90,5 @@ if __name__ == '__main__':
     print(f"Configuración utilizada: {config_name}")
     app = create_app(config_name)
     app.run()
+
 
