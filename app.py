@@ -29,8 +29,7 @@ def create_app(config_name):
         'pool_recycle': 3600,
     }
 
-    # Configurar sesiones para usar filesystem en lugar de Redis
-    app.config['SESSION_TYPE'] = 'filesystem'
+    # Inicializar Flask-Session
     Session(app)
 
     db.init_app(app)
@@ -88,3 +87,4 @@ if __name__ == '__main__':
     print(f"Configuración utilizada: {config_name}")
     app = create_app(config_name)
     app.run()
+
