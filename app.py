@@ -30,7 +30,7 @@ def create_app(config_name):
         'pool_recycle': 3600,
     }
 
-    # Verificar y configurar Redis para sesiones
+    # Configurar Redis para sesiones
     session_redis_url = app.config.get('SESSION_REDIS')
     print(f"SESSION_REDIS URL from config: {session_redis_url}")
     if session_redis_url:
