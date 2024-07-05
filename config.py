@@ -23,12 +23,12 @@ class Config:
     SESSION_PERMANENT = False
     SESSION_USE_SIGNER = True
     SESSION_REDIS = os.environ.get('REDIS_URL')
-    SESSION_COOKIE_NAME = 'my_session'  # Añade esta línea
+    SESSION_COOKIE_NAME = 'my_session'
 
 class DevelopmentConfig(Config):
     """Configuración utilizada durante el desarrollo."""
     DEBUG = True
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL').replace('mysql://', 'mysql+pymysql://')
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL', 'sqlite:///' + os.path.join(BASE_DIR, 'dev.db')).replace('mysql://', 'mysql+pymysql://')
 
 class TestingConfig(Config):
     """Configuración utilizada durante las pruebas."""
