@@ -34,6 +34,7 @@ def create_app(config_name):
     session_redis_url = app.config.get('SESSION_REDIS')
     if session_redis_url:
         app.config['SESSION_REDIS'] = Redis.from_url(session_redis_url)
+        app.config['SESSION_TYPE'] = 'redis'
         Session(app)
     else:
         raise ValueError("La configuración SESSION_REDIS no está definida o es None.")
