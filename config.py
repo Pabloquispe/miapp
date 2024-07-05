@@ -28,7 +28,7 @@ class Config:
 class DevelopmentConfig(Config):
     """Configuración utilizada durante el desarrollo."""
     DEBUG = True
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL', 'sqlite:///' + os.path.join(BASE_DIR, 'dev.db')).replace('mysql://', 'mysql+pymysql://')
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL').replace('mysql://', 'mysql+pymysql://')
 
 class TestingConfig(Config):
     """Configuración utilizada durante las pruebas."""
@@ -48,3 +48,4 @@ config_by_name = {
     'prod': ProductionConfig,
     'default': DevelopmentConfig
 }
+
