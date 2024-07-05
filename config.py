@@ -12,12 +12,6 @@ class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY') or os.urandom(24)
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
-    # Configuración de horarios de servicios
-    HORARIO_INICIO_MANANA = '09:00'
-    HORARIO_FIN_MANANA = '12:00'
-    HORARIO_INICIO_TARDE = '13:00'
-    HORARIO_FIN_TARDE = '18:00'
-
     # Configuración de Redis para sesiones
     SESSION_TYPE = 'redis'
     SESSION_PERMANENT = False
@@ -25,16 +19,10 @@ class Config:
     SESSION_COOKIE_NAME = 'my_session'
     SESSION_REDIS = os.environ.get('REDIS_TLS_URL') or os.environ.get('REDIS_URL')
 
-    @staticmethod
-    def init_app(app):
-        pass
-
 class DevelopmentConfig(Config):
     """Configuración utilizada durante el desarrollo."""
     DEBUG = True
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL')
-    if SQLALCHEMY_DATABASE_URI and SQLALCHEMY_DATABASE_URI.startswith('mysql://'):
-        SQLALCHEMY_DATABASE_URI = SQLALCHEMY_DATABASE_URI.replace('mysql://', 'mysql+pymysql://')
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL').replace('mysql://', 'mysql+pymysql://')
 
 class TestingConfig(Config):
     """Configuración utilizada durante las pruebas."""
@@ -45,9 +33,7 @@ class TestingConfig(Config):
 class ProductionConfig(Config):
     """Configuración utilizada en producción."""
     DEBUG = False
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL')
-    if SQLALCHEMY_DATABASE_URI and SQLALCHEMY_DATABASE_URI.startswith('mysql://'):
-        SQLALCHEMY_DATABASE_URI = SQLALCHEMY_DATABASE_URI.replace('mysql://', 'mysql+pymysql://')
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL').replace('mysql://', 'mysql+pymysql://')
 
 # Diccionario para facilitar el acceso a las configuraciones
 config_by_name = {
@@ -56,4 +42,3 @@ config_by_name = {
     'prod': ProductionConfig,
     'default': DevelopmentConfig
 }
-
