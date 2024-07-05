@@ -1,3 +1,4 @@
+import os
 from flask import Flask, render_template
 from flask_migrate import Migrate
 from flask_session import Session
@@ -12,7 +13,6 @@ from controladores.routes import register_routes
 import logging
 from logging.handlers import RotatingFileHandler
 from dotenv import load_dotenv
-import os
 
 # Cargar variables de entorno
 load_dotenv()
