@@ -1,53 +1,54 @@
-import os
 from dotenv import load_dotenv
+import os
+from flask import Flask
+from controladores.main_routes import main_bp
 
-# Cargar las variables de entorno desde el archivo .env
-load_dotenv()
+app = Flask(__name__)
+app.register_blueprint(main_bp)
 
-# Directorio base de la aplicación
-BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+load_dotenv()  # Cargar las variables de entorno desde el archivo .env
 
-class Config:
-    """Configuración base utilizada para todas las configuraciones."""
-    SECRET_KEY = os.environ.get('SECRET_KEY') or os.urandom(24)
-    SQLALCHEMY_TRACK_MODIFICATIONS = False
+# Imprimir las variables de entorno para verificar
+print(f"SECRET_KEY: {os.getenv('SECRET_KEY')}")
+print(f"DATABASE_URL: {os.getenv('DATABASE_URL')}")
 
-    # Configuración de horarios de servicios
-    HORARIO_INICIO_MANANA = '09:00'
-    HORARIO_FIN_MANANA = '12:00'
-    HORARIO_INICIO_TARDE = '13:00'
-    HORARIO_FIN_TARDE = '18:00'
+from flask import Flask
+from flask_migrate import Migrate
+from config import config_by_name
+from modelos.models import db
+from controladores.admin_routes import admin_bp
+from controladores.user_routes import user_bp
+from controladores.auth_routes import auth_bp
+from controladores.main_routes import main_bp
 
-    # Configuración de sesiones basada en archivos
-    SESSION_TYPE = 'filesystem'
-    SESSION_FILE_DIR = os.path.join(BASE_DIR, 'flask_session')
-    SESSION_PERMANENT = False
-    SESSION_USE_SIGNER = True
-    SESSION_FILE_THRESHOLD = 100
-    SESSION_FILE_MODE = 0o600
-    SESSION_COOKIE_NAME = 'my_session'
+def create_app(config_name):
+    """Crea y configura la aplicación Flask."""
+    app = Flask(__name__, template_folder='vistas/templates', static_folder='vistas/static')
+    app.config.from_object(config_by_name[config_name])
+    
+    # Verificar si la configuración de la base de datos está correcta
+    if 'SQLALCHEMY_DATABASE_URI' not in app.config:
+        raise RuntimeError("SQLALCHEMY_DATABASE_URI no está configurado")
 
-class DevelopmentConfig(Config):
-    """Configuración utilizada durante el desarrollo."""
-    DEBUG = True
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL').replace('mysql://', 'mysql+pymysql://')
+    # Inicializar la base de datos
+    db.init_app(app)
+    migrate = Migrate(app, db)
 
-class TestingConfig(Config):
-    """Configuración utilizada durante las pruebas."""
-    TESTING = True
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(BASE_DIR, 'test.db')
-    DEBUG = True
+    # Registrar Blueprints
+    app.register_blueprint(admin_bp)
+    app.register_blueprint(user_bp)
+    app.register_blueprint(auth_bp)
+    app.register_blueprint(main_bp)
+    
+    with app.app_context():
+        from controladores.routes import register_routes
+        register_routes(app)
+        db.create_all()
 
-class ProductionConfig(Config):
-    """Configuración utilizada en producción."""
-    DEBUG = False
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL').replace('mysql://', 'mysql+pymysql://')
+    return app
 
-# Diccionario para facilitar el acceso a las configuraciones
-config_by_name = {
-    'dev': DevelopmentConfig,
-    'test': TestingConfig,
-    'prod': ProductionConfig,
-    'default': DevelopmentConfig
-}
-
+if __name__ == "__main__":
+    config_name = os.getenv('FLASK_CONFIG') or 'dev'
+    app = create_app(config_name)
+    app.run(debug=(config_name == 'dev'))
+    app.run(debug=True)
