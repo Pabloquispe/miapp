@@ -1,6 +1,7 @@
-from flask import request, jsonify, render_template, current_app as app, redirect, url_for, Response, session
+from flask import request, jsonify, redirect, url_for
 from modelos.models import db, Usuario, Vehiculo, Servicio, Slot, Reserva, ComentarioServicio, Repuesto
 from controladores.conversacion import handle_message, registrar_interaccion
+from openai.error import OpenAIError
 import traceback
 
 def register_routes(app):
@@ -19,16 +20,8 @@ def register_routes(app):
                 registrar_interaccion(None, '', respuesta_bot, es_exitosa)
                 return jsonify({'message': respuesta_bot})
 
-            if 'usuario_id' in session:
-                bot_response = handle_message(user_message, session['usuario_id'])
-            else:
-                bot_response = handle_message(user_message)
-
-            # Asegúrate de que bot_response sea serializable a JSON
-            if isinstance(bot_response, Response):
-                bot_response = bot_response.get_json() if bot_response.is_json else bot_response.get_data(as_text=True)
-
-            return jsonify({'message': bot_response})
+            bot_response = handle_message(user_message)
+            return jsonify({"message": bot_response})
         except Exception as e:
             error_trace = traceback.format_exc()
             app.logger.error(f"Error en la ruta '/conversacion': {str(e)}\n{error_trace}")
@@ -38,32 +31,6 @@ def register_routes(app):
     def create_usuario():
         data = request.get_json()
         try:
-            if app.config['TESTING'] or app.config['DEBUG']:
-                # Omitir la verificación de correo electrónico en entorno de pruebas o desarrollo
-                new_usuario = Usuario(
-                    nombre=data['nombre'],
-                    apellido=data['apellido'],
-                    email=data['email'],
-                    telefono=data['telefono'],
-                    direccion=data.get('direccion'),
-                    ciudad=data.get('ciudad'),
-                    profesion=data.get('profesion'),
-                    pais=data.get('pais'),
-                    fecha_nacimiento=data.get('fecha_nacimiento'),
-                    genero=data.get('genero'),
-                    preferencias_servicio=data.get('preferencias_servicio'),
-                    rol=data.get('rol', 'usuario'),
-                    activo=True,
-                    estado='confirmado'  # Marcar el usuario como confirmado
-                )
-                if 'password' in data:
-                    new_usuario.set_password(data['password'])
-                db.session.add(new_usuario)
-                db.session.commit()
-                session['usuario_id'] = new_usuario.id
-                return jsonify({'message': 'Usuario creado', 'usuario': new_usuario.id})
-
-            # Lógica normal para producción
             new_usuario = Usuario(
                 nombre=data['nombre'],
                 apellido=data['apellido'],
@@ -85,7 +52,6 @@ def register_routes(app):
                 new_usuario.set_password(data['password'])
             db.session.add(new_usuario)
             db.session.commit()
-            session['usuario_id'] = new_usuario.id
             return jsonify({'message': 'Usuario creado', 'usuario': new_usuario.id})
         except Exception as e:
             db.session.rollback()
