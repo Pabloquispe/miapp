@@ -2,6 +2,7 @@ from dotenv import load_dotenv
 import os
 from flask import Flask
 from flask_migrate import Migrate
+from flask_session import Session
 from config import config_by_name
 from modelos.models import db
 from controladores.admin_routes import admin_bp
@@ -20,6 +21,10 @@ def create_app(config_name):
     # Verificar si la configuración de la base de datos está correcta
     if 'SQLALCHEMY_DATABASE_URI' not in app.config:
         raise RuntimeError("SQLALCHEMY_DATABASE_URI no está configurado")
+
+    # Configuración de la sesión
+    app.config['SESSION_TYPE'] = 'filesystem'
+    Session(app)
 
     # Inicializar la base de datos
     db.init_app(app)
@@ -42,4 +47,3 @@ if __name__ == "__main__":
     config_name = os.getenv('FLASK_CONFIG') or 'dev'
     app = create_app(config_name)
     app.run(debug=(config_name == 'dev'))
-
