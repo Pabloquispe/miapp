@@ -7,7 +7,7 @@ from modelos.models import db, Usuario, Vehiculo, Servicio, Slot, Reserva, Regis
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 from flask import Blueprint, request, jsonify, current_app as app, redirect, url_for
-#from openai.error import OpenAIError  # Importación necesaria
+from openai.error import OpenAIError  # Importación necesaria
 
 # Configuración de la API de OpenAI
 openai.api_key = os.getenv('API_KEY')
