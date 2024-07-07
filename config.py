@@ -9,13 +9,6 @@ class Config:
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or 'mysql://root@localhost/proyecto27'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
-    # Configuración de Flask-Session
-    SESSION_TYPE = 'filesystem'
-    SESSION_PERMANENT = False
-    SESSION_USE_SIGNER = True
-    SESSION_KEY_PREFIX = 'flask-session:'
-    SESSION_COOKIE_NAME = 'session'
-
     # Configuración de horarios de servicios
     HORARIO_INICIO_MANANA = '09:00'
     HORARIO_FIN_MANANA = '12:00'
