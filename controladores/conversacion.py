@@ -359,7 +359,7 @@ def handle_message(message):
             'password': conversation_state["password"],
             'estado': 'inicio'
         }
-        response_usuario = requests.post(f'{API_URL}/usuarios', json=usuario_data)
+        response_usuario = requests.post(f'{RESERVAS_API_URL}/usuarios', json=usuario_data)
 
         if response_usuario.status_code == 200:
             conversation_state["usuario_id"] = response_usuario.json()['usuario']
@@ -369,7 +369,7 @@ def handle_message(message):
                 'modelo': conversation_state["modelo"],
                 'año': conversation_state["año"]
             }
-            response_vehiculo = requests.post(f'{API_URL}/vehiculos', json=vehiculo_data)
+            response_vehiculo = requests.post(f'{RESERVAS_API_URL}/vehiculos', json=vehiculo_data)
             if response_vehiculo.status_code == 200:
                 conversation_state["vehiculo_id"] = response_vehiculo.json()['vehiculo']
                 conversation_state["estado"] = "reservar_servicio"
