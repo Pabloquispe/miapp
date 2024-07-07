@@ -217,6 +217,14 @@ def handle_message(message):
             respuesta_bot = "❌ **Por favor, proporciona un correo electrónico válido.**"
             registrar_interaccion(conversation_state["usuario_id"], message, respuesta_bot, es_exitosa)
             return respuesta_bot  # Devuelve cadena de texto
+        
+        # Evitar solicitar el correo nuevamente si ya ha sido proporcionado
+        if conversation_state.get("email") == email:
+            respuesta_bot = f"¡Hola de nuevo, **{email.split('@')[0].capitalize()}!** 👋 ¿Qué servicio deseas reservar hoy o cuéntame qué problema tiene tu auto?"
+            es_exitosa = True
+            registrar_interaccion(conversation_state["usuario_id"], message, respuesta_bot, es_exitosa)
+            return respuesta_bot  # Devuelve cadena de texto
+
         conversation_state["email"] = email
         usuario = Usuario.query.filter_by(email=email).first()
         if usuario:
@@ -239,6 +247,7 @@ def handle_message(message):
             respuesta_bot = f"**¡Encantado de conocerte!** 😊 Parece que eres un cliente nuevo. Por favor, dime tu nombre completo y apellido."
             registrar_interaccion(conversation_state["usuario_id"], message, respuesta_bot, es_exitosa)
             return respuesta_bot  # Devuelve cadena de texto
+
 
     elif conversation_state["estado"] == "solicitar_nombre":
         conversation_state["nombre_completo"] = message.strip()
