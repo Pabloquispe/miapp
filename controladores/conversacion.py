@@ -7,6 +7,7 @@ from modelos.models import db, Usuario, Vehiculo, Servicio, Slot, Reserva, Regis
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 from flask import Blueprint, request, jsonify, current_app as app, redirect, url_for
+from openai.error import OpenAIError
 
 # Configuración de la API de OpenAI
 openai.api_key = os.getenv('API_KEY')
@@ -53,7 +54,7 @@ def interactuar_con_openai(consulta):
         return response.choices[0].message['content'].strip()
     except openai.error.RateLimitError:
         return "❌ **Lo siento, hemos superado nuestro límite de solicitudes por ahora. Por favor, intenta de nuevo más tarde.**"
-    except openai.error.OpenAIError as e:
+    except OpenAIError as e:
         print(f"Error interacting with OpenAI: {e}")
         return "❌ **Ha ocurrido un error al interactuar con OpenAI. Por favor, intenta de nuevo más tarde.**"
 
@@ -195,7 +196,7 @@ def handle_message(message):
     es_exitosa = False
     UMBRAL_SIMILITUD = 0.2
     
-    if conversation_state["estado"] == "inicio" and not message.strip():
+    if conversation_state["estado"] == "inicio" and message.strip() == '':
         respuesta_bot = "¡Hola! 👋 **Soy tu asistente para la reserva de servicios automotrices.** 🚗 ¿Cómo te puedo ayudar hoy? "
         es_exitosa = True
         registrar_interaccion(conversation_state["usuario_id"], message, respuesta_bot, es_exitosa)
@@ -540,8 +541,3 @@ def handle_message(message):
             respuesta_bot = "🔧 **¿En qué más puedo ayudarte?**"
             registrar_interaccion(conversation_state["usuario_id"], message, respuesta_bot, es_exitosa)
             return respuesta_bot  # Devuelve cadena de texto
-
-    # Estado no manejado
-    respuesta_bot = "❌ **Hubo un error en la conversación. Por favor, intenta de nuevo.**"
-    registrar_interaccion(conversation_state["usuario_id"], message, respuesta_bot, es_exitosa)
-    return respuesta_bot  # Devuelve cadena de texto
